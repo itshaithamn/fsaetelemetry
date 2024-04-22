@@ -2,7 +2,6 @@ package org.main;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
@@ -78,18 +77,37 @@ public class VideoTestTest extends Application {
         });
     }
 
-    private void setupChartStage(Stage stage) {
-        stage.setTitle("Temperature Chart with Pre-defined Data");
+    private void setupChartStage(Stage stage) throws GeneralSecurityException, IOException {
+        stage.setTitle("Real Time Rpm Chart");
 
+        // Define the axes
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
         xAxis.setLabel("Time (seconds)");
         yAxis.setLabel("RPM");
 
+        ValueRange bounds_raw = org.main.Main.getValueRange("Sheet1!B2:D2");
+        List<List<Object>> boundValues = bounds_raw.getValues();
+        Object cellValueMax = boundValues.get(0).get(0);
+        Object cellValueMin = boundValues.get(0).get(1);
+        Object cellValueThreadMax = boundValues.get(0).get(2);
+        int maxValue = Integer.parseInt(cellValueMax.toString());
+        int minValue = Integer.parseInt(cellValueMin.toString());
+        double threadMax = Double.parseDouble(cellValueThreadMax.toString());
+
+        //Bounds need to be adjusted, the plan is to run a max and min function in google sheets and call it a day.
         xAxis.setForceZeroInRange(false);
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound((int) Math.round(threadMax + 0.5));
         xAxis.setAutoRanging(false);
+        xAxis.setTickUnit(10);
+
         yAxis.setForceZeroInRange(false);
+        yAxis.setLowerBound(minValue);
+        yAxis.setUpperBound(maxValue + 100);
         yAxis.setAutoRanging(false);
+        yAxis.setTickMarkVisible(false);
+        yAxis.setTickUnit(1000);
 
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("RPM Engine Monitoring");
@@ -115,9 +133,9 @@ public class VideoTestTest extends Application {
 
     private void updateChart(double currentTime) {
         double rpmValue = retrieveRPMDataAtTime(currentTime);
-        Platform.runLater(() ->
-                series.getData().add(new XYChart.Data<>(currentTime, rpmValue))
-        );
+//        Platform.runLater(() ->
+                series.getData().add(new XYChart.Data<>(currentTime, rpmValue));
+//        );
     }
 
     private double retrieveRPMDataAtTime(double time) {
