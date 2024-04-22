@@ -1,4 +1,4 @@
-package org.example;
+package org.main;
 
 import javafx.application.Application;
 import javafx.beans.binding.Bindings;
