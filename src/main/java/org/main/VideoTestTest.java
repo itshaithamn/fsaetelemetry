@@ -2,6 +2,7 @@ package org.main;
 
 import com.google.api.services.sheets.v4.model.ValueRange;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.Scene;
@@ -54,7 +55,7 @@ public class VideoTestTest extends Application {
     }
 
     private void setupVideoStage(Stage stage) throws Exception {
-        File file = new File(dir, "Darek_Last_Run.mp4");
+        File file = new File(dir, "test.mp4");
         Media media = new Media(file.toURI().toURL().toString());
         MediaPlayer player = new MediaPlayer(media);
         MediaView viewer = new MediaView(player);
@@ -126,19 +127,18 @@ public class VideoTestTest extends Application {
     private void setupChartSync(MediaPlayer player) {
         player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
             double currentTime = newValue.toSeconds();
-            System.out.println(currentTime);
             updateChart(currentTime);
         });
     }
 
     private void updateChart(double currentTime) {
-        double rpmValue = retrieveRPMDataAtTime(currentTime);
-//        Platform.runLater(() ->
-                series.getData().add(new XYChart.Data<>(currentTime, rpmValue));
-//        );
+        int rpmValue = retrieveRPMDataAtTime(currentTime);
+        Platform.runLater(() ->
+                series.getData().add(new XYChart.Data<>(currentTime, rpmValue))
+        );
     }
 
-    private double retrieveRPMDataAtTime(double time) {
+    private int retrieveRPMDataAtTime(double time) {
         // Calculate index based on the current time and retrieve data
         int index = (int) (time * 100); // Assuming 100 data points per second
         if (index >= 0 && index < rpmData.length) {

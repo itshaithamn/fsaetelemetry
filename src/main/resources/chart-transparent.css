@@ -1,0 +1,36 @@
+.chart {
+    background-color: transparent;
+}
+
+.chart-plot-background {
+    -fx-background-color: transparent;
+}
+
+/* Customizing the axis labels to be completely black */
+.axis-label {
+    -fx-text-fill: black; /* Set the color of the axis labels to black */
+}
+
+/* Customizing the tick labels on both axes to be completely black */
+.number-axis .axis-tick-label,
+.category-axis .axis-tick-label {
+    -fx-text-fill: black; /* Set the color of the tick labels to black */
+}
+
+/* Making the horizontal and vertical grid lines transparent */
+.chart-horizontal-grid-lines, .chart-vertical-grid-lines {
+    -fx-stroke: transparent; /* Make grid lines transparent */
+}
+
+/* Customizing the series line to be neon red */
+.default-color0.chart-series-line {
+    -fx-stroke: #FF073A; /* Neon red color for the series line */
+}
+
+.xy-chart {
+    -fx-background-color: transparent;
+}
+
+.line-chart {
+    -fx-background-color: transparent;
+}
