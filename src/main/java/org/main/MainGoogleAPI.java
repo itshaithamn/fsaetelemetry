@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.DoubleProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
@@ -20,41 +21,21 @@ import java.io.File;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.List;
+import java.util.Objects;
 
-public class VideoTestTest extends Application {
+public class MainGoogleAPI extends Application {
     private String dir = System.getProperty("user.dir");
     private int[] rpmData;
     private XYChart.Series<Number, Number> series;
     private LineChart<Number, Number> lineChart;
 
-    public static void main(String[] args) {
-        launch(args);
-    }
-
     @Override
     public void start(Stage primaryStage) throws Exception {
         loadRPMData(); // Load RPM data from Google Sheets
-        setupVideoStage(new Stage()); // Setup and display the video player in a new stage
-        setupChartStage(new Stage()); // Setup and display the chart in a new stage
+        setupVideoAndChartStage(primaryStage); // Setup video and chart in the same stage
     }
 
-    private void loadRPMData() throws IOException, GeneralSecurityException {
-        ValueRange rpm_raw = org.main.Main.getValueRange("Sheet1!A2:A11188");
-        this.rpmData = allocateData(rpm_raw);
-    }
-
-    static int[] allocateData(ValueRange ValueRange){
-        List<List<Object>> values = ValueRange.getValues();
-        int[] array = new int[values.size()];
-
-        for (int i = 0; i < values.size(); i++) {
-            array[i] = Integer.parseInt(values.get(i).get(0).toString());
-        }
-
-        return array;
-    }
-
-    private void setupVideoStage(Stage stage) throws Exception {
+    private void setupVideoAndChartStage(Stage stage) throws Exception {
         File file = new File(dir, "test.mp4");
         Media media = new Media(file.toURI().toURL().toString());
         MediaPlayer player = new MediaPlayer(media);
@@ -66,10 +47,18 @@ public class VideoTestTest extends Application {
         height.bind(Bindings.selectDouble(viewer.sceneProperty(), "height"));
         viewer.setPreserveRatio(true);
 
-        StackPane root = new StackPane(viewer);
-        Scene scene = new Scene(root, 500, 500, Color.BLACK);
+        // Load bounds and series setup from Google Sheets
+        ValueRange data_raw = GoogleAPI.getValueRange("Sheet1!B2:D2");
+        setupChart(data_raw);
+
+        StackPane root = new StackPane();
+        root.getChildren().addAll(viewer, lineChart);
+        root.setAlignment(lineChart, Pos.TOP_RIGHT);
+
+        Scene scene = new Scene(root, 800, 450, Color.BLACK);
+
         stage.setScene(scene);
-        stage.setTitle("Video Tester");
+        stage.setTitle("Video and RPM Chart Viewer");
         stage.show();
 
         player.setOnReady(() -> {
@@ -78,49 +67,53 @@ public class VideoTestTest extends Application {
         });
     }
 
-    private void setupChartStage(Stage stage) throws GeneralSecurityException, IOException {
-        stage.setTitle("Real Time Rpm Chart");
+    private void setupChart(ValueRange data_raw) {
+        List<List<Object>> dataValues = data_raw.getValues();
+        int maxValue = Integer.parseInt(dataValues.get(0).get(0).toString());
+        int minValue = Integer.parseInt(dataValues.get(0).get(1).toString());
+        double threadMax = Double.parseDouble(dataValues.get(0).get(2).toString());
 
-        // Define the axes
-        final NumberAxis xAxis = new NumberAxis();
-        final NumberAxis yAxis = new NumberAxis();
-        xAxis.setLabel("Time (seconds)");
-        yAxis.setLabel("RPM");
-
-        ValueRange bounds_raw = org.main.Main.getValueRange("Sheet1!B2:D2");
-        List<List<Object>> boundValues = bounds_raw.getValues();
-        Object cellValueMax = boundValues.get(0).get(0);
-        Object cellValueMin = boundValues.get(0).get(1);
-        Object cellValueThreadMax = boundValues.get(0).get(2);
-        int maxValue = Integer.parseInt(cellValueMax.toString());
-        int minValue = Integer.parseInt(cellValueMin.toString());
-        double threadMax = Double.parseDouble(cellValueThreadMax.toString());
-
-        //Bounds need to be adjusted, the plan is to run a max and min function in google sheets and call it a day.
-        xAxis.setForceZeroInRange(false);
-        xAxis.setLowerBound(0);
-        xAxis.setUpperBound((int) Math.round(threadMax + 0.5));
-        xAxis.setAutoRanging(false);
-        xAxis.setTickUnit(10);
-
-        yAxis.setForceZeroInRange(false);
-        yAxis.setLowerBound(minValue);
-        yAxis.setUpperBound(maxValue + 100);
-        yAxis.setAutoRanging(false);
-        yAxis.setTickMarkVisible(false);
-        yAxis.setTickUnit(1000);
+        final NumberAxis xAxis = new NumberAxis(0, threadMax, 10);
+        final NumberAxis yAxis = new NumberAxis(minValue, maxValue + 100, 1000);
+        xAxis.setTickLabelFill(Color.BLACK);
+        yAxis.setTickLabelFill(Color.BLACK);
 
         lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("RPM Engine Monitoring");
         lineChart.setCreateSymbols(false);
+        lineChart.setLegendVisible(false);
+        lineChart.setMinSize(350, 200);
+        lineChart.setMaxSize(350, 200);
+        lineChart.setPrefSize(350, 200);
+
+        // Set transparent background
+        // Apply CSS to make the chart and plot background transparent
+        lineChart.setStyle(
+                "-fx-background-color: transparent;" +
+                        "-fx-background-radius: 0;" +
+                        "-fx-background-insets: 0;"
+        );
+        lineChart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/chart-transparent.css")).toExternalForm());
 
         series = new XYChart.Series<>();
         series.setName("RPM");
         lineChart.getData().add(series);
+    }
 
-        Scene scene = new Scene(lineChart, 800, 600);
-        stage.setScene(scene);
-        stage.show();
+    private void loadRPMData() throws IOException, GeneralSecurityException {
+        ValueRange rpm_raw = GoogleAPI.getValueRange("Sheet1!A2:A11188");
+        this.rpmData = allocateData(rpm_raw);
+    }
+
+    static int[] allocateData(ValueRange ValueRange) {
+        List<List<Object>> values = ValueRange.getValues();
+        int[] array = new int[values.size()];
+
+        for (int i = 0; i < values.size(); i++) {
+            array[i] = Integer.parseInt(values.get(i).get(0).toString());
+        }
+
+        return array;
     }
 
     // Synchronize the chart updates with the video playback

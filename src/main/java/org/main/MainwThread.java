@@ -21,7 +21,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 
-public class VideoTest extends Application {
+public class MainwThread extends Application {
     private String dir = System.getProperty("user.dir");
 
     public static void main(String[] args) {
@@ -69,7 +69,7 @@ public class VideoTest extends Application {
         xAxis.setLabel("Time (seconds)");
         yAxis.setLabel("RPM");
 
-        ValueRange bounds_raw = org.main.Main.getValueRange("Sheet1!B2:D2");
+        ValueRange bounds_raw = GoogleAPI.getValueRange("Sheet1!B2:D2");
         List<List<Object>> boundValues = bounds_raw.getValues();
         Object cellValueMax = boundValues.get(0).get(0);
         Object cellValueMin = boundValues.get(0).get(1);
@@ -93,7 +93,7 @@ public class VideoTest extends Application {
         yAxis.setTickUnit(1000);
 
         //Initialize AirTemp Data
-        ValueRange rpm_raw = org.main.Main.getValueRange("Sheet1!A2:A11188");
+        ValueRange rpm_raw = GoogleAPI.getValueRange("Sheet1!A2:A11188");
         int[] rpmData = allocateData(rpm_raw);
 
         // Create the line chart - Changed it and made it not final

@@ -18,12 +18,12 @@ import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
 import java.util.List;
 
-public class Main {
+public class GoogleAPI {
     public static String APPLICATION_NAME = "Google Sheets Example";
     public static String SPREADSHEET_ID = "1OulK7qcztNx3LtyS1zSeCjprHqocoHYLQiAc4GdjCOM";
 
     private static Credential authorize() throws IOException, GeneralSecurityException{
-        InputStream in = Main.class.getResourceAsStream("/credentials.json");
+        InputStream in = GoogleAPI.class.getResourceAsStream("/credentials.json");
         //add try loop
         assert in != null;
         GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(
