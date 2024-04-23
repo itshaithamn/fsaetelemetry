@@ -25,6 +25,7 @@
 /* Customizing the series line to be neon red */
 .default-color0.chart-series-line {
     -fx-stroke: #FF073A; /* Neon red color for the series line */
+    -fx-stroke-width: 2px; /* Adjust this value as needed */
 }
 
 .xy-chart {

@@ -29,7 +29,7 @@ dependencies {
     implementation 'org.openjfx:javafx-base:17'
     implementation 'org.openjfx:javafx-fxml:17'
     implementation 'org.openjfx:javafx-media:17'
-    implementation group: 'org.knowm.xchart', name: 'xchart', version: '3.8.7'
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
 }
 
 javafx {
