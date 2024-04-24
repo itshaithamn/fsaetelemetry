@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="133.0" prefWidth="416.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.main.MainOfflineController">
+   <children>
+      <TextField fx:id="videoInput" layoutX="50.0" layoutY="20.0" text="Enter in Video File" />
+      <TextField fx:id="fileInput" layoutX="50.0" layoutY="74.0" text="Enter in CSV File Name" />
+      <Button fx:id="beginRender" layoutX="251.0" layoutY="45.0" mnemonicParsing="false" onAction="#setBeginRender" prefHeight="41.0" prefWidth="131.0" text="Begin Render" />
+   </children>
+</AnchorPane>
