@@ -10,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -80,6 +79,7 @@ public class MainOfflineController {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.setOnCloseRequest(e -> controller.terminateMediaPlayer()); // Handle the close request
         stage.show();
     }
@@ -102,8 +102,10 @@ public class MainOfflineController {
         });
 
         player.play();
-        video.fitWidthProperty().bind(((Pane) video.getParent()).widthProperty());
-        video.fitHeightProperty().bind(((Pane) video.getParent()).heightProperty());
+
+        // Remove binding and use direct setting if specific size needed
+        video.setFitWidth(video.getFitWidth());
+        video.setFitHeight(video.getFitHeight());
         video.setPreserveRatio(true);
     }
 
