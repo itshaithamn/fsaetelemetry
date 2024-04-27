@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Rectangle2D?>
-<?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
@@ -24,17 +23,17 @@
    <Button fx:id="reverse" layoutX="14.0" layoutY="459.0" mnemonicParsing="false" onAction="#skipBackward" text="Reverse" />
    <Slider fx:id="volumeSlider" layoutX="266.0" layoutY="464.0" />
    <Text layoutX="194.0" layoutY="476.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Volume.png" />
-   <LineChart layoutX="783.0" prefHeight="251.0" prefWidth="298.0">
+   <LineChart fx:id="rpm" layoutX="783.0" prefHeight="251.0" prefWidth="298.0">
      <xAxis>
-       <CategoryAxis side="BOTTOM" />
+       <NumberAxis side="BOTTOM" />
      </xAxis>
      <yAxis>
        <NumberAxis side="LEFT" />
      </yAxis>
    </LineChart>
-   <LineChart layoutX="783.0" layoutY="251.0" prefHeight="251.0" prefWidth="298.0">
+   <LineChart fx:id="airtemp" layoutX="783.0" layoutY="251.0" prefHeight="251.0" prefWidth="298.0">
       <xAxis>
-         <CategoryAxis side="BOTTOM" />
+         <NumberAxis side="BOTTOM" />
       </xAxis>
       <yAxis>
          <NumberAxis side="LEFT" />

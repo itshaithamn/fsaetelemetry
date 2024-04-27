@@ -4,12 +4,14 @@ import javafx.beans.Observable;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Parent;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -22,10 +24,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class MainOfflineController {
-
-    @FXML
-    private Button beginRender;
+public class MainOfflineController implements Initializable {
 
     @FXML
     private TextField videoInput;
@@ -47,35 +46,40 @@ public class MainOfflineController {
 
     private MediaPlayer player; // Making MediaPlayer accessible at the class level
 
-    private Rectangle2D videoBounds;
-
     @FXML
     private Slider volumeSlider;
 
     @FXML
-    public void initialize(URL location, ResourceBundle resources) throws MalformedURLException {
+    private LineChart<Number, Number> rpm;
+
+    @FXML
+    private LineChart<Number, Number> airtemp;
+
+
+    @FXML
+    public void initialize(URL location, ResourceBundle resources) {
         assert play != null : "fx:id=\"play\" was not injected: check your FXML file.";
         assert forward != null : "fx:id=\"forward\" was not injected: check your FXML file.";
         assert reverse != null : "fx:id=\"reverse\" was not injected: check your FXML file.";
 
-        // Set actions that do not depend on specific media being loaded
-        play.setOnAction(e -> togglePlayPause());
-        forward.setOnAction(e -> skipForward());
-        reverse.setOnAction(e -> skipBackward());
+        XYChart.Series<Number, Number> seriesrpm = new XYChart.Series<>();
+        seriesrpm.getData().add(new XYChart.Data<>(10, 10));
+        seriesrpm.getData().add(new XYChart.Data<>(20, 20));
+        seriesrpm.getData().add(new XYChart.Data<>(30, 30));
+        seriesrpm.getData().add(new XYChart.Data<>(40, 40));
+        rpm.getData().add(seriesrpm);
     }
 
     @FXML
     public void setBeginRender(ActionEvent actionEvent) throws IOException {
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/videorender.fxml"));
-        Parent root = fxmlLoader.load();
+        Pane root = fxmlLoader.load();
 
-        // The controller instance for 'videorender.fxml'
         MainOfflineController controller = fxmlLoader.getController();
 
-        // Now use the loaded controller to call 'setVideoInput'
         String videoName = videoInput.getText();
-        controller.setVideoInput(videoName); // Assuming videoInput gets text properly
+        controller.setVideoInput(videoName);
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -83,6 +87,7 @@ public class MainOfflineController {
         stage.setOnCloseRequest(e -> controller.terminateMediaPlayer()); // Handle the close request
         stage.show();
     }
+
 
     private final String dir = System.getProperty("user.dir");
 
@@ -142,4 +147,29 @@ public class MainOfflineController {
             player.seek(player.getCurrentTime().subtract(Duration.seconds(10)));
         }
     }
+
+//    private void setupChartSync(MediaPlayer player) {
+//        player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+//            double currentTime = newValue.toSeconds();
+//            updateChart(currentTime);
+//        });
+//    }
+//
+//    private int[] data;
+//
+//    private void updateChart(double currentTime) {
+//        int rpmValue = retrieveDataAtTime(currentTime);
+//        Platform.runLater(() ->
+//                series.getData().add(new XYChart.Data<>(currentTime, rpmValue))
+//        );
+//    }
+//
+//    private int retrieveDataAtTime(double time) {
+//        // Calculate index based on the current time and retrieve data
+//        int index = (int) (time * 100); // Assuming 100 data points per second
+//        if (index >= 0 && index < data.length) {
+//            return data[index];
+//        }
+//        return 0; // Default RPM value if out of bounds
+//    }
 }
