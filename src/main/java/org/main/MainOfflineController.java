@@ -62,12 +62,6 @@ public class MainOfflineController implements Initializable {
         assert forward != null : "fx:id=\"forward\" was not injected: check your FXML file.";
         assert reverse != null : "fx:id=\"reverse\" was not injected: check your FXML file.";
 
-        XYChart.Series<Number, Number> seriesrpm = new XYChart.Series<>();
-        seriesrpm.getData().add(new XYChart.Data<>(10, 10));
-        seriesrpm.getData().add(new XYChart.Data<>(20, 20));
-        seriesrpm.getData().add(new XYChart.Data<>(30, 30));
-        seriesrpm.getData().add(new XYChart.Data<>(40, 40));
-        rpm.getData().add(seriesrpm);
     }
 
     @FXML
@@ -81,11 +75,18 @@ public class MainOfflineController implements Initializable {
         String videoName = videoInput.getText();
         controller.setVideoInput(videoName);
 
+        String csvname = dataFileInput.getText();
+        controller.setFileInput(csvname);
+
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.setOnCloseRequest(e -> controller.terminateMediaPlayer()); // Handle the close request
         stage.show();
+    }
+
+    private void setFileInput(String csvname) {
+
     }
 
 
@@ -97,6 +98,13 @@ public class MainOfflineController implements Initializable {
         Media media = new Media(file.toURI().toURL().toString());
         this.player = new MediaPlayer(media);
         video.setMediaPlayer(this.player);
+
+        XYChart.Series<Number, Number> seriesrpm = new XYChart.Series<>();
+        seriesrpm.getData().add(new XYChart.Data<>(10, 10));
+        seriesrpm.getData().add(new XYChart.Data<>(20, 20));
+        seriesrpm.getData().add(new XYChart.Data<>(30, 30));
+        seriesrpm.getData().add(new XYChart.Data<>(40, 40));
+        rpm.getData().add(seriesrpm);
 
         // Move volume control initialization here after player is created
         volumeSlider.setValue(player.getVolume() * 100);
