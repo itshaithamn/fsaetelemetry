@@ -1,36 +1,36 @@
 package org.main;
 
-import javafx.beans.Observable;
+import com.opencsv.CSVReaderHeaderAware;
+import com.opencsv.exceptions.CsvValidationException;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class MainOfflineController implements Initializable {
 
     @FXML
-    private TextField videoInput;
-
-    @FXML
-    private TextField dataFileInput;
+    private Button csvInput;
 
     @FXML
     private Button play;
@@ -61,7 +61,6 @@ public class MainOfflineController implements Initializable {
         assert play != null : "fx:id=\"play\" was not injected: check your FXML file.";
         assert forward != null : "fx:id=\"forward\" was not injected: check your FXML file.";
         assert reverse != null : "fx:id=\"reverse\" was not injected: check your FXML file.";
-
     }
 
     @FXML
@@ -72,11 +71,7 @@ public class MainOfflineController implements Initializable {
 
         MainOfflineController controller = fxmlLoader.getController();
 
-        String videoName = videoInput.getText();
-        controller.setVideoInput(videoName);
-
-        String csvname = dataFileInput.getText();
-        controller.setFileInput(csvname);
+        controller.setVideoInput(actionEvent);
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -85,40 +80,39 @@ public class MainOfflineController implements Initializable {
         stage.show();
     }
 
-    private void setFileInput(String csvname) {
+    @FXML
+    private void setFileInput(ActionEvent actionEvent) throws IOException {
+        final FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showOpenDialog(null);
 
+
+        try(CSVReaderHeaderAware reader = new CSVReaderHeaderAware(new FileReader(file))){
+            String headerNames = "RPM";
+            System.out.println(Arrays.toString(reader.readNext(headerNames)));
+            System.out.println(Arrays.toString(new Map[]{reader.readMap()}));
+        } catch (IOException | CsvValidationException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
     private final String dir = System.getProperty("user.dir");
 
     @FXML
-    public void setVideoInput(String videoName) throws MalformedURLException {
-        File file = new File(dir, videoName);
+    public void setVideoInput(ActionEvent actionEvent) throws MalformedURLException {
+        final FileChooser fileChooser = new FileChooser();
+
+        File file = fileChooser.showOpenDialog(null);
         Media media = new Media(file.toURI().toURL().toString());
         this.player = new MediaPlayer(media);
         video.setMediaPlayer(this.player);
 
-        XYChart.Series<Number, Number> seriesrpm = new XYChart.Series<>();
-        seriesrpm.getData().add(new XYChart.Data<>(10, 10));
-        seriesrpm.getData().add(new XYChart.Data<>(20, 20));
-        seriesrpm.getData().add(new XYChart.Data<>(30, 30));
-        seriesrpm.getData().add(new XYChart.Data<>(40, 40));
-        rpm.getData().add(seriesrpm);
-
-        // Move volume control initialization here after player is created
         volumeSlider.setValue(player.getVolume() * 100);
-        volumeSlider.valueProperty().addListener((Observable observable) -> {
-            if (player != null) {
-                player.setVolume(volumeSlider.getValue() / 100.0);
-            }
+        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            player.setVolume(newValue.doubleValue() / 100.0);
         });
 
         player.play();
-
-        // Remove binding and use direct setting if specific size needed
-        video.setFitWidth(video.getFitWidth());
-        video.setFitHeight(video.getFitHeight());
         video.setPreserveRatio(true);
     }
 
