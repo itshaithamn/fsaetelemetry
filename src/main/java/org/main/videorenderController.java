@@ -2,17 +2,13 @@ package org.main;
 
 import com.opencsv.CSVReaderHeaderAware;
 import com.opencsv.exceptions.CsvValidationException;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -30,7 +26,7 @@ import java.util.ArrayList;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-public class MainOfflineController implements Initializable {
+public class videorenderController implements Initializable {
 
     @FXML
     private Button play;
@@ -44,23 +40,10 @@ public class MainOfflineController implements Initializable {
     @FXML
     private MediaView video;
 
-    private MediaPlayer player; // Making MediaPlayer accessible at the class level
+    private MediaPlayer player;
 
     @FXML
     private Slider volumeSlider;
-
-    @FXML
-    private TextField headerNameGraphOne;
-
-    @FXML
-    private TextField headerNameGraphTwo;
-
-    @FXML
-    private LineChart<Number, Number> rpm;
-
-    @FXML
-    private LineChart<Number, Number> airtemp;
-
 
     public int[] getGlobalArray() {
         return globalArray;
@@ -88,14 +71,14 @@ public class MainOfflineController implements Initializable {
         // Use the getter to retrieve the globalArray from the current instance
         int[] currentGlobalArray = this.getGlobalArray();
 
-        MainOfflineController controller = fxmlLoader.getController();
+        videorenderController controller = fxmlLoader.getController();
 
         controller.setGlobalArray(currentGlobalArray);
         controller.setVideoInput(actionEvent);
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
-        stage.setResizable(false);
+        stage.setResizable(true);
         stage.setOnCloseRequest(e -> controller.terminateMediaPlayer()); // Handle the close request
         stage.show();
     }
@@ -129,7 +112,6 @@ public class MainOfflineController implements Initializable {
         this.setGlobalArray(globalArray);
     }
 
-
     private final String dir = System.getProperty("user.dir");
 
     @FXML
@@ -146,54 +128,9 @@ public class MainOfflineController implements Initializable {
             player.setVolume(newValue.doubleValue() / 100.0);
         });
 
-        setupChartSync();
-
         player.play();
         video.setPreserveRatio(true);
     }
-
-    private void setupChartSync() {
-        player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
-            double currentTime = newValue.toSeconds();
-            updateChart(currentTime);
-        });
-    }
-
-    public XYChart.Series<Number, Number> seriesOne;
-    public XYChart.Series<Number, Number> seriesTwo;
-
-    private void updateChart(double currentTime) {
-        int dataValue = retrieveDataAtTime(currentTime);
-        Platform.runLater(() ->
-                seriesTwo.getData().add(new XYChart.Data<>(currentTime, dataValue))
-        );
-    }
-
-    private int retrieveDataAtTime(double time) {
-        // Calculate index based on the current time and retrieve data
-        int index = (int) (time * 100); // Assuming 100 data points per second
-        if (index >= 0 && index < globalArray.length) {
-            return globalArray[index];
-        }
-
-        return 0; // Default RPM value if out of bounds
-    }
-
-
-    public void graphProcessingOne(){
-        seriesOne = new XYChart.Series<>(); // Initialize the series
-        seriesOne.getData().add(new XYChart.Data<>(10, 10));
-        seriesOne.getData().add(new XYChart.Data<>(20, 20));
-        seriesOne.getData().add(new XYChart.Data<>(30, 30));
-        seriesOne.getData().add(new XYChart.Data<>(40, 40));
-        rpm.getData().add(seriesOne);
-    }
-
-    public void graphProcessingTwo(){
-        seriesTwo = new XYChart.Series<>(); // Initialize the series
-        airtemp.getData().add(seriesTwo);
-    }
-
 
     public void terminateMediaPlayer() {
         if (player != null) {

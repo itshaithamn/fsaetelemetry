@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="133.0" prefWidth="416.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.main.MainOfflineController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="133.0" prefWidth="416.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.main.videorenderController">
    <Button layoutX="122.0" layoutY="67.0" mnemonicParsing="false" onAction="#setBeginRender" prefHeight="41.0" prefWidth="173.0" text="Begin Render" />
    <Button layoutX="148.0" layoutY="23.0" mnemonicParsing="false" onAction="#setFileInput" prefHeight="30.0" prefWidth="121.0" text="Choose CSV File" />
 </AnchorPane>
