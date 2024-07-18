@@ -4,7 +4,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.main.chartsController">
-    <Button layoutX="238.0" layoutY="200.0" onAction="#setFileInput" text="Choose CSV File" />
-    <TextField fx:id="headerNameIn" layoutX="215.0" layoutY="147.0" promptText=" Enter header name" />
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="133.0" prefWidth="416.0" xmlns="http://javafx.com/javafx/21.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.main.chartsController">
+    <Button layoutX="128.0" layoutY="67.0" onAction="#setFileInput" prefHeight="41.0" prefWidth="173.0" text="Choose CSV File" />
+    <TextField fx:id="headerNameIn" layoutX="129.0" layoutY="28.0" promptText=" Enter header name" />
 </AnchorPane>

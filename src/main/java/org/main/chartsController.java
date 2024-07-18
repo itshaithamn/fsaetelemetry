@@ -76,6 +76,7 @@ public class chartsController {
 
         Stage chartStage = new Stage();
         chartStage.setTitle(headerNameIn.getText());
+        chartStage.setResizable(false);
         chartStage.setScene(new Scene(chartView));
         chartStage.show();
     }
