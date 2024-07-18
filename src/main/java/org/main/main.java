@@ -6,10 +6,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class MainOffline extends Application {
+public class main extends Application {
 
-    public void test(Stage stage) throws Exception{
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/charts.fxml"));
+    public void chartsController(Stage stage) throws Exception{
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chartselection.fxml"));
 
         Parent root = fxmlLoader.load();
 
@@ -18,8 +18,8 @@ public class MainOffline extends Application {
         stage.show();
     }
 
-    public void fileSelection(Stage stage) throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fileselection.fxml"));
+    public void videorenderController(Stage stage) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/videoselection.fxml"));
 
         Parent root = fxmlLoader.load();
         videorenderController controller = fxmlLoader.getController();
@@ -31,8 +31,8 @@ public class MainOffline extends Application {
     }
 
     public void start(Stage stage) throws Exception {
-        fileSelection(new Stage());
-        test(new Stage());
+        videorenderController(new Stage());
+        chartsController(new Stage());
     }
 
     public static void main(String[] args) {
