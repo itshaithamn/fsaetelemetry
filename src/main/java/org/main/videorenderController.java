@@ -60,6 +60,8 @@ public class videorenderController implements Initializable {
         videorenderController controller = fxmlLoader.getController();
         controller.setVideoInput(actionEvent);
 
+        videoRenderControllerInstance = fxmlLoader.getController();
+
         Scene scene = new Scene(root, videoWidth, videoHeight);
         stage.setScene(scene);
         stage.setResizable(false);
@@ -130,9 +132,17 @@ public class videorenderController implements Initializable {
     }
 
     public double setmediaPlayer() {
-        if (player != null && player.getStatus() != MediaPlayer.Status.DISPOSED) {
+        if (player != null) {
             return player.getCurrentTime().toSeconds();
         }
-        return 0.0;
+        return 50.0;
     }
+
+    private static videorenderController videoRenderControllerInstance;
+
+
+    public static videorenderController getVideoRenderControllerInstance() {
+        return videoRenderControllerInstance;
+    }
+
 }

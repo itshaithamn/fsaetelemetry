@@ -55,20 +55,18 @@ public class chartsController {
         globalArray = dataList.stream().mapToDouble(i -> i).toArray();
         this.setGlobalArray(globalArray);
 
-        videorenderController videorenderController = new videorenderController();
-        double currenttime = videorenderController.setmediaPlayer();
 
-        chartview(globalArray, currenttime);
+        chartview(globalArray);
     }
 
     private double[] globalArray;
 
-    public void chartview(double[] globalArray, double currenttime) throws Exception {
+    public void chartview(double[] globalArray) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chartview.fxml"));
         Parent chartView = fxmlLoader.load();
 
         chartviewController chartviewController = fxmlLoader.getController();
-        chartviewController.func(globalArray, currenttime);
+        chartviewController.func(globalArray);
 
         Stage chartStage = new Stage();
         chartStage.setTitle(headerNameIn.getText());
