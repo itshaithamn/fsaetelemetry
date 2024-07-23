@@ -5,14 +5,16 @@ import io.fair_acc.chartfx.axes.spi.DefaultNumericAxis;
 import io.fair_acc.dataset.spi.DoubleDataSet;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 
-import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class chartviewController {
+public class chartviewController implements Initializable {
     @FXML
     public DefaultNumericAxis xAxis;
 
@@ -26,19 +28,21 @@ public class chartviewController {
     public double currentTime;
     DoubleDataSet dataSet = new DoubleDataSet("RPM Data");
 
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        xAxis.setName("Time");
+        yAxis.setName("RPM");
+        yAxis.setAutoRanging(true);
+        xAxis.setAutoRanging(true);
 
-    public void func(double[] globalArray) throws IOException {
-        this.globalArray = globalArray;
+        chart.getDatasets().add(dataSet);
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::updateCurrentTime, 0, 1, TimeUnit.MILLISECONDS);
+    }
 
-        dataSet.add(currentTime, retrieveDataAtTime(currentTime));
-
-        DefaultNumericAxis xAxis = new DefaultNumericAxis("Time");
-        DefaultNumericAxis yAxis = new DefaultNumericAxis("RPM");
-
-        chart = new XYChart(xAxis, yAxis);
+    public void func(double[] globalArray) {
+        this.globalArray = globalArray;
     }
 
     private void updateCurrentTime() {
@@ -48,15 +52,13 @@ public class chartviewController {
     }
 
     private void updateChart(double currentTime) {
-//        double data = retrieveDataAtTime(currentTime);
-        dataSet.add(currentTime, retrieveDataAtTime(currentTime));
-        Platform.runLater(() ->
-                chart.getDatasets().add(dataSet)
-        );
+        double data = retrieveDataAtTime(currentTime);
+        dataSet.add(currentTime, data);
+
+
     }
 
     private double retrieveDataAtTime(double time) {
-        // Calculate index based on the current time and retrieve data
         int index = (int) (time * 100); // Assuming 100 data points per second
         if (index >= 0 && index < globalArray.length) {
             return globalArray[index];

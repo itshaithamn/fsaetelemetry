@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/21.0.1"
             fx:controller="org.main.chartviewController">
-    <XYChart fx:id="chart" title="Some Example Plots">
+    <XYChart fx:id="chart" >
         <axes>
             <DefaultNumericAxis fx:id="xAxis" side="BOTTOM" name="time" autoRanging="true"/>
             <DefaultNumericAxis fx:id="yAxis" side="RIGHT" name="Amplitude" autoRanging="false"/>
