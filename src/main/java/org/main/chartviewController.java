@@ -9,6 +9,9 @@ import javafx.scene.chart.XYChart;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class chartviewController {
 
@@ -24,6 +27,8 @@ public class chartviewController {
     private XYChart.Series<Number, Number> series = new XYChart.Series<>();
     private double[] globalArray;
     private Timeline timeline;
+    public double currentTime;
+    private ScheduledExecutorService scheduler;
 
     public void func(double[] globalArray) throws IOException {
         this.globalArray = globalArray;
@@ -34,10 +39,18 @@ public class chartviewController {
         lineChart.setCreateSymbols(false);
         lineChart.setLegendVisible(false);
 
-        double currenttime = videorenderController.setmediaPlayer();
-        updateChart(currenttime);
+        currentTime = videorenderController.setmediaPlayer();
+
+        scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(this::updateCurrentTime, 0, 1, TimeUnit.MILLISECONDS);
 
         lineChart.getData().add(series);
+    }
+
+    private void updateCurrentTime() {
+        videorenderController videorenderController = org.main.videorenderController.getVideoRenderControllerInstance();
+        currentTime = videorenderController.setmediaPlayer();
+        Platform.runLater(() -> updateChart(currentTime));
     }
 
 
