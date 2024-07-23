@@ -16,7 +16,6 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -40,7 +39,7 @@ public class videorenderController implements Initializable {
     int videoHeight;
     int videoWidth;
 
-    private MediaPlayer player;
+    public MediaPlayer player;
 
     @FXML
     private Slider volumeSlider;
@@ -53,17 +52,12 @@ public class videorenderController implements Initializable {
     }
 
     @FXML
-    public void setBeginRender(ActionEvent actionEvent) throws IOException {
+    public void setBeginRender(ActionEvent actionEvent) throws Exception {
         Stage stage = new Stage();
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/videorender.fxml"));
         Pane root = fxmlLoader.load();
 
-        // Use the getter to retrieve the globalArray from the current instance
-//        int[] currentGlobalArray = this.getGlobalArray();
-
         videorenderController controller = fxmlLoader.getController();
-
-//        controller.setGlobalArray(currentGlobalArray);
         controller.setVideoInput(actionEvent);
 
         Scene scene = new Scene(root, videoWidth, videoHeight);
@@ -73,33 +67,32 @@ public class videorenderController implements Initializable {
         stage.show();
     }
 
-    private final String dir = System.getProperty("user.dir");
-
     @FXML
     public void setVideoInput(ActionEvent actionEvent) throws MalformedURLException {
         final FileChooser fileChooser = new FileChooser();
-
         File file = fileChooser.showOpenDialog(null);
-        media = new Media(file.toURI().toURL().toString());
-        this.player = new MediaPlayer(media);
-        video.setMediaPlayer(this.player);
+        if (file != null) {
+            media = new Media(file.toURI().toURL().toString());
+            this.player = new MediaPlayer(media);
+            video.setMediaPlayer(this.player);
 
-        player.setOnReady(() -> {
-            videoHeight = media.getHeight();
-            videoWidth = media.getWidth();
+            player.setOnReady(() -> {
+                videoHeight = media.getHeight();
+                videoWidth = media.getWidth();
 
-            Stage stage = (Stage) video.getScene().getWindow();
-            stage.setWidth(videoWidth);
-            stage.setHeight(videoHeight);
-        });
+                Stage stage = (Stage) video.getScene().getWindow();
+                stage.setWidth(videoWidth);
+                stage.setHeight(videoHeight);
+            });
 
-        volumeSlider.setValue(player.getVolume() * 100);
-        volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            player.setVolume(newValue.doubleValue() / 100.0);
-        });
+            volumeSlider.setValue(player.getVolume() * 100);
+            volumeSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+                player.setVolume(newValue.doubleValue() / 100.0);
+            });
 
-        player.play();
-        video.setPreserveRatio(false);
+            player.play();
+            video.setPreserveRatio(false);
+        }
     }
 
     public void terminateMediaPlayer() {
@@ -134,5 +127,12 @@ public class videorenderController implements Initializable {
         if (player != null) {
             player.seek(player.getCurrentTime().subtract(Duration.seconds(10)));
         }
+    }
+
+    public double setmediaPlayer() {
+        if (player != null && player.getStatus() != MediaPlayer.Status.DISPOSED) {
+            return player.getCurrentTime().toSeconds();
+        }
+        return 0.0;
     }
 }

@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class main extends Application {
 
     public void chartsController(Stage stage) throws Exception{
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chartselection.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chartviewselection.fxml"));
 
         Parent root = fxmlLoader.load();
 

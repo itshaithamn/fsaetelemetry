@@ -5,10 +5,11 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.media.MediaPlayer;
 
 import java.util.Objects;
 
-public class chartviewController{
+public class chartviewController {
 
     @FXML
     private LineChart<Number, Number> lineChart;
@@ -19,44 +20,41 @@ public class chartviewController{
     @FXML
     private NumberAxis yAxis;
 
-    private Thread chartThread;
-    private double timeInSeconds = 0.0;
+    private XYChart.Series<Number, Number> series = new XYChart.Series<>();
+    private double[] globalArray;
 
-    public void func(double [] globalArray) {
-        XYChart.Series<Number, Number> series = new XYChart.Series<>();
+    public void func(double[] globalArray, double currenttime) {
+        this.globalArray = globalArray;
+
 
         lineChart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/chart-transparent.css")).toExternalForm());
         lineChart.setCreateSymbols(false);
         lineChart.setLegendVisible(false);
 
-//        for (int i = 0; i < globalArray.length; i++) {
-//            series.getData().add(new XYChart.Data<>(i, globalArray[i]));
-//        }
-
-
-        chartThread = new Thread(() -> {
-            for (double data : globalArray) {
-                try {
-                    Thread.sleep(10); // Simulate real-time data feed every 0.01 seconds
-//                    System.out.println(timeInSeconds);
-                    Platform.runLater(() ->
-                            series.getData().add(new XYChart.Data<>(timeInSeconds, data)));
-                    timeInSeconds += 0.01;
-                } catch (InterruptedException e) {
-                    stopThread();
-                    return;
-                }
-            }
-        });
-        chartThread.start();
-
         lineChart.getData().add(series);
+        updateChart(currenttime);
     }
 
-    private boolean running = true;
+    private void setupChartSync(MediaPlayer player) {
+        player.currentTimeProperty().addListener((observable, oldValue, newValue) -> {
+            double currentTime = newValue.toSeconds();
+            updateChart(currentTime);
+        });
+    }
 
-    private void stopThread() {
-        running = false; // Signal the thread to stop
-        chartThread.interrupt(); // Interrupt if sleeping or blocked
+    private void updateChart(double currentTime) {
+        double data = retrieveDataAtTime(currentTime);
+        Platform.runLater(() ->
+                series.getData().add(new XYChart.Data<>(currentTime, data))
+        );
+    }
+
+    private double retrieveDataAtTime(double time) {
+        // Calculate index based on the current time and retrieve data
+        int index = (int) (time * 100); // Assuming 100 data points per second
+        if (index >= 0 && index < globalArray.length) {
+            return globalArray[index];
+        }
+        return 0; // Default RPM value if out of bounds
     }
 }

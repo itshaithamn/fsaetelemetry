@@ -22,14 +22,6 @@ public class chartsController {
     @FXML
     private TextField headerNameIn;
 
-
-    public void setGlobalArray(double[] globalArray) {
-        this.globalArray = globalArray;
-    }
-
-    public double[] globalArray;
-
-
     @FXML
     private void setFileInput(ActionEvent actionEvent) throws Exception {
         final FileChooser fileChooser = new FileChooser();
@@ -60,25 +52,33 @@ public class chartsController {
             throw new RuntimeException(e);
         }
 
-        // Convert ArrayList to array and assign to the global variable
         globalArray = dataList.stream().mapToDouble(i -> i).toArray();
         this.setGlobalArray(globalArray);
 
-        chartview();
+        videorenderController videorenderController = new videorenderController();
+        double currenttime = videorenderController.setmediaPlayer();
+
+        chartview(globalArray, currenttime);
     }
 
-    public void chartview() throws Exception {
+    private double[] globalArray;
+
+    public void chartview(double[] globalArray, double currenttime) throws Exception {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/chartview.fxml"));
         Parent chartView = fxmlLoader.load();
 
         chartviewController chartviewController = fxmlLoader.getController();
-        chartviewController.func(globalArray);
+        chartviewController.func(globalArray, currenttime);
 
         Stage chartStage = new Stage();
         chartStage.setTitle(headerNameIn.getText());
         chartStage.setResizable(false);
         chartStage.setScene(new Scene(chartView));
         chartStage.show();
+    }
+
+    public void setGlobalArray(double[] globalArray) throws Exception {
+        this.globalArray = globalArray;
     }
 
 }
