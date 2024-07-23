@@ -1,63 +1,57 @@
 package org.main;
 
-import javafx.animation.Timeline;
+import io.fair_acc.chartfx.XYChart;
+import io.fair_acc.chartfx.axes.spi.DefaultNumericAxis;
+import io.fair_acc.dataset.spi.DoubleDataSet;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 
 import java.io.IOException;
-import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+
 public class chartviewController {
+    @FXML
+    public DefaultNumericAxis xAxis;
 
     @FXML
-    private LineChart<Number, Number> lineChart;
+    public DefaultNumericAxis yAxis;
 
     @FXML
-    private NumberAxis xAxis;
+    private XYChart chart;
 
-    @FXML
-    private NumberAxis yAxis;
-
-    private XYChart.Series<Number, Number> series = new XYChart.Series<>();
     private double[] globalArray;
-    private Timeline timeline;
     public double currentTime;
-    private ScheduledExecutorService scheduler;
+    DoubleDataSet dataSet = new DoubleDataSet("RPM Data");
+
 
     public void func(double[] globalArray) throws IOException {
         this.globalArray = globalArray;
 
-        videorenderController videorenderController = org.main.videorenderController.getVideoRenderControllerInstance();
-
-        lineChart.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/chart-transparent.css")).toExternalForm());
-        lineChart.setCreateSymbols(false);
-        lineChart.setLegendVisible(false);
-
-        currentTime = videorenderController.setmediaPlayer();
-
-        scheduler = Executors.newScheduledThreadPool(1);
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::updateCurrentTime, 0, 1, TimeUnit.MILLISECONDS);
 
-        lineChart.getData().add(series);
+        dataSet.add(currentTime, retrieveDataAtTime(currentTime));
+
+        DefaultNumericAxis xAxis = new DefaultNumericAxis("Time");
+        DefaultNumericAxis yAxis = new DefaultNumericAxis("RPM");
+
+        chart = new XYChart(xAxis, yAxis);
     }
 
     private void updateCurrentTime() {
         videorenderController videorenderController = org.main.videorenderController.getVideoRenderControllerInstance();
-        currentTime = videorenderController.setmediaPlayer();
+        this.currentTime = videorenderController.setmediaPlayer();
         Platform.runLater(() -> updateChart(currentTime));
     }
 
-
     private void updateChart(double currentTime) {
-        double data = retrieveDataAtTime(currentTime);
+//        double data = retrieveDataAtTime(currentTime);
+        dataSet.add(currentTime, retrieveDataAtTime(currentTime));
         Platform.runLater(() ->
-                series.getData().add(new XYChart.Data<>(currentTime, data))
+                chart.getDatasets().add(dataSet)
         );
     }
 

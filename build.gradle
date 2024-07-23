@@ -26,6 +26,8 @@ dependencies {
     implementation 'org.openjfx:javafx-media:21.0.2'
     implementation 'org.apache.commons:commons-lang3:3.13.0'
     implementation 'com.opencsv:opencsv:5.9'
+    implementation 'io.fair-acc:chartfx:11.3.1'
+    implementation 'ch.qos.logback:logback-classic:1.4.12'
 }
 
 javafx {
