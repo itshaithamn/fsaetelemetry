@@ -8,7 +8,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,7 +26,7 @@ public class chartviewController implements Initializable {
 
     private double[] globalArray;
     public double currentTime;
-    DoubleDataSet dataSet = new DoubleDataSet("Data");
+    DoubleDataSet dataSet = new DoubleDataSet("data");
     String yAxisTitle;
 
     @Override
@@ -48,7 +47,10 @@ public class chartviewController implements Initializable {
     }
 
     public void collecttitle(String title){
-        assert Objects.equals(yAxisTitle, title);
+        this.yAxisTitle = title;
+        if(yAxis != null){
+            yAxis.setName(yAxisTitle);
+        }
     }
 
     private void updateCurrentTime() {
