@@ -21,6 +21,7 @@ public class chartsController {
 
     @FXML
     private TextField headerNameIn;
+    String headerName;
 
     @FXML
     private void setFileInput(ActionEvent actionEvent) throws Exception {
@@ -35,7 +36,7 @@ public class chartsController {
         ArrayList<Double> dataList = new ArrayList<>();
 
         try (CSVReaderHeaderAware reader = new CSVReaderHeaderAware(new FileReader(file))) {
-            String headerName = headerNameIn.getText();
+            headerName = headerNameIn.getText();
 
             Map<String, String> values;
             while ((values = reader.readMap()) != null) {
@@ -55,7 +56,6 @@ public class chartsController {
         globalArray = dataList.stream().mapToDouble(i -> i).toArray();
         this.setGlobalArray(globalArray);
 
-
         chartview(globalArray);
     }
 
@@ -66,10 +66,11 @@ public class chartsController {
         Parent chartView = fxmlLoader.load();
 
         chartviewController chartviewController = fxmlLoader.getController();
-        chartviewController.func(globalArray);
+        chartviewController.collectdata(globalArray);
+        chartviewController.collecttitle(headerName);
 
         Stage chartStage = new Stage();
-        chartStage.setTitle(headerNameIn.getText());
+        chartStage.setTitle(headerName);
         chartStage.setResizable(false);
         chartStage.setScene(new Scene(chartView));
         chartStage.show();

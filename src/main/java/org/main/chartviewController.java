@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,12 +27,13 @@ public class chartviewController implements Initializable {
 
     private double[] globalArray;
     public double currentTime;
-    DoubleDataSet dataSet = new DoubleDataSet("RPM Data");
+    DoubleDataSet dataSet = new DoubleDataSet("Data");
+    String yAxisTitle;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        xAxis.setName("Time");
-        yAxis.setName("RPM");
+        xAxis.setName("Time (ms)");
+        yAxis.setName(yAxisTitle);
         yAxis.setAutoRanging(true);
         xAxis.setAutoRanging(true);
 
@@ -41,8 +43,12 @@ public class chartviewController implements Initializable {
         scheduler.scheduleAtFixedRate(this::updateCurrentTime, 0, 1, TimeUnit.MILLISECONDS);
     }
 
-    public void func(double[] globalArray) {
+    public void collectdata(double[] globalArray) {
         this.globalArray = globalArray;
+    }
+
+    public void collecttitle(String title){
+        assert Objects.equals(yAxisTitle, title);
     }
 
     private void updateCurrentTime() {
@@ -54,8 +60,6 @@ public class chartviewController implements Initializable {
     private void updateChart(double currentTime) {
         double data = retrieveDataAtTime(currentTime);
         dataSet.add(currentTime, data);
-
-
     }
 
     private double retrieveDataAtTime(double time) {
