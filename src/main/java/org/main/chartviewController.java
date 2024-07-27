@@ -2,6 +2,7 @@ package org.main;
 
 import io.fair_acc.chartfx.XYChart;
 import io.fair_acc.chartfx.axes.spi.DefaultNumericAxis;
+import io.fair_acc.chartfx.plugins.Zoomer;
 import io.fair_acc.dataset.spi.DoubleDataSet;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -33,6 +34,12 @@ public class chartviewController implements Initializable {
     DoubleDataSet dataSet = new DoubleDataSet("data");
     String yAxisTitle;
 
+    private Zoomer zoomer;
+
+    private double xupperBound = 0;
+    private double ylowerBound = 0;
+    private double yupperBound = 0;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         xAxis.setName("Time (ms)");
@@ -40,8 +47,14 @@ public class chartviewController implements Initializable {
         yAxis.setAutoRanging(true);
         xAxis.setAutoRanging(true);
 
-        chart.getDatasets().add(dataSet);
-//        chart.getPlugins().add(new Zoomer());
+        zoomer = new Zoomer();
+
+        Platform.runLater(() -> {
+            chart.getDatasets().add(dataSet);
+        });
+        chart.getPlugins().add(zoomer);
+
+        animation();
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.scheduleAtFixedRate(this::updateCurrentTime, 0, 1, TimeUnit.MILLISECONDS);
     }
@@ -55,8 +68,9 @@ public class chartviewController implements Initializable {
         timeline.setCycleCount(Animation.INDEFINITE);
 
         KeyFrame keyFrame = new KeyFrame(Duration.millis(100), actionEvent -> {
-           double lowerBound = dataSet.getDimension();
-           System.out.println(lowerBound);
+           xupperBound = xAxis.getMax();
+           ylowerBound = yAxis.getMin();
+           yupperBound = xAxis.getMax();
         });
         timeline.getKeyFrames().add(keyFrame);
         timeline.play();
@@ -72,7 +86,7 @@ public class chartviewController implements Initializable {
     private void updateCurrentTime() {
         videorenderController videorenderController = org.main.videorenderController.getVideoRenderControllerInstance();
         this.currentTime = videorenderController.setmediaPlayer();
-        Platform.runLater(() -> updateChart(currentTime));
+        updateChart(currentTime);
     }
 
     private void updateChart(double currentTime) {
